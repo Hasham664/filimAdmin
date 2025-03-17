@@ -146,7 +146,7 @@
 
 
 import React from 'react'
-
+// comenr?
 const Navbar = () => {
   return (
     <div className='text-center text-2xl'>Navbar</div>
