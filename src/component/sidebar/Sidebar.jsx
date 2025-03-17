@@ -13,12 +13,12 @@ import Link from 'next/link';
 
 const menuItems = [
   {
-    label: 'Home',
+    label: 'Pages',
     icon: <FaHome size={20} className='mr-3 text-gray-700' />,
     link: '/',
     subMenu: [
       {
-        label: 'Hero',
+        label: 'Home',
         link: '/hero',
         icon: <FaHome size={16} className='mr-2' />,
       },
