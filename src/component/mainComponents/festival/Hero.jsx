@@ -54,48 +54,47 @@ const Hero = () => {
   const [runwayImage, setRunwayImage] = useState(false);
 
   useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const { data } = await axios.get(
-            'http://localhost:4000/api/festival/getfestival'
-          );
-          console.log(data.festival[0], 'response get api');
-  
-          const homeData = data.festival[0];
-          if (homeData?.hero) {
-            setTitle(homeData.hero.title || '');
-          
-            setImage(homeData.hero.bgImage || '');
-          }
-          if (homeData?.advance) {
-            setAdvance(homeData.advance);
-            setAdvanceImage(homeData.advance.bgImage);
-          }
-          if (homeData?.toplist) {
-            setToplist(homeData.toplist);
-            setToplistImage(homeData.toplist.bgImage);
-          }
-          if (homeData?.robot) {
-            setRobot(homeData.robot);
-            setRobotImage(homeData.robot.bgImage);
-          }
-          if (homeData?.competate) {
-            setCompetate(homeData.competate);
-            setCompetateImage(homeData.competate.bgImage);
-          }
-          if (homeData?.runway) {
-            setRunway(homeData.runway);
-            setRunwayImage(homeData.runway.bgImage);
-          }
-        } catch (error) {
-          console.error('Error fetching data:', error);
-          toast.error('Error fetching data');
+    const fetchData = async () => {
+      try {
+        const { data } = await axios.get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/festival/getfestival`
+        );
+        console.log(data.festival[0], 'response get api');
+
+        const homeData = data.festival[0];
+        if (homeData?.hero) {
+          setTitle(homeData.hero.title || '');
+
+          setImage(homeData.hero.bgImage || '');
         }
-      };
-  
-      fetchData();
-    }, []);
-  
+        if (homeData?.advance) {
+          setAdvance(homeData.advance);
+          setAdvanceImage(homeData.advance.bgImage);
+        }
+        if (homeData?.toplist) {
+          setToplist(homeData.toplist);
+          setToplistImage(homeData.toplist.bgImage);
+        }
+        if (homeData?.robot) {
+          setRobot(homeData.robot);
+          setRobotImage(homeData.robot.bgImage);
+        }
+        if (homeData?.competate) {
+          setCompetate(homeData.competate);
+          setCompetateImage(homeData.competate.bgImage);
+        }
+        if (homeData?.runway) {
+          setRunway(homeData.runway);
+          setRunwayImage(homeData.runway.bgImage);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        toast.error('Error fetching data');
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -104,7 +103,6 @@ const Hero = () => {
       const formData = new FormData();
       const hero = {
         title,
-        
       };
       formData.append('hero', JSON.stringify(hero));
       formData.append('advance', JSON.stringify(advance));
@@ -132,7 +130,8 @@ const Hero = () => {
         formData.append('runwayImage', runwayImage);
       }
       const response = await axios.post(
-        'http://localhost:4000/api/service/serviceRoute',
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/festival/festivalRoute`,
+
         formData,
         {
           headers: {

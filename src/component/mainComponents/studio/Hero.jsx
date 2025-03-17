@@ -67,7 +67,7 @@ const Hero = () => {
     const fetchData = async () => {
       try {
         const { data } = await axios.get(
-          'http://localhost:4000/api/studio/getstudio'
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/studio/getstudio`
         );
         console.log(data.studio[0].competate2, 'response competate api');
         console.log(data.studio[0].toplist2, 'response toplist2 api');

@@ -53,7 +53,7 @@ const Hero = () => {
     const fetchData = async () => {
       try {
         const { data } = await axios.get(
-          'http://localhost:4000/api/home/gethome'
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/home/gethome`
         );
         console.log(data.home[0], 'response get api');
 
@@ -125,7 +125,7 @@ const Hero = () => {
         formData.append('runwayImage', runwayImage);
       }
       const response = await axios.post(
-        'http://localhost:4000/api/home/homeRoute',
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/home/homeRoute`,
         formData,
         {
           headers: {

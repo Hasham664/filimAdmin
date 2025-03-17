@@ -57,7 +57,7 @@ const Hero = () => {
       const fetchData = async () => {
         try {
           const { data } = await axios.get(
-            'http://localhost:4000/api/service/getservice'
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/service/getservice`
           );
           console.log(data.services[0], 'response get api');
   
@@ -132,7 +132,7 @@ const Hero = () => {
         formData.append('runwayImage', runwayImage);
       }
       const response = await axios.post(
-        'http://localhost:4000/api/service/serviceRoute',
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/service/serviceRoute`,
         formData,
         {
           headers: {

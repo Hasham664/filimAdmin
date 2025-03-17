@@ -16,36 +16,7 @@ const Navbar = () => {
   // Loading state for form submission
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchNavbarData = async () => {
-      try {
-        const response = await axios.get(
-          'http://localhost:3000/api/home/navbar'
-        );
-        if (response?.data?.data?.length > 0) {
-          const existingData = response.data.data[0];
-
-          // Map the first five links (if available) to form fields.
-          if (existingData.links && existingData.links.length >= 5) {
-            setFormData({
-              service: existingData.links[0].label || '',
-              studio: existingData.links[1].label || '',
-              festival: existingData.links[2].label || '',
-              news: existingData.links[3].label || '',
-              contact: existingData.links[4].label || '',
-            });
-          }
-          if (existingData.logo) {
-            setImage(existingData.logo);
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching navbar data:', error);
-      }
-    };
-
-    fetchNavbarData();
-  }, []);
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,32 +34,9 @@ const Navbar = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const payload = { ...formData, bgImage: image };
-      const response = await axios.post(
-        'http://localhost:3001/api/home/navbar',
-        payload
-      );
-      toast.success('Data submitted successfully!');
-      console.log('Response:', response.data);
-      setLoading(false);
-    } catch (error) {
-      toast.error('Error submitting data');
-      console.error('Submission error:', error);
-      setLoading(false);
-    }
-  };
+  
 
-  const fields = [
-    { name: 'service', label: 'For Services' },
-    { name: 'studio', label: 'For Studio' },
-    { name: 'festival', label: 'For Festival' },
-    { name: 'news', label: 'For News' },
-    { name: 'contact', label: 'For Contact' },
-  ];
+  
 
   return (
     <div className='p-4 border'>

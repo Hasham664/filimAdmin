@@ -20,7 +20,7 @@ const Contact = () => {
     const fetchData = async () => {
       try {
         const { data } = await axios.get(
-          'http://localhost:4000/api/contact/getcontact'
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contact/getcontact`
         );
         console.log(data.contact[0], 'response get api');
 
@@ -61,6 +61,7 @@ const Contact = () => {
      
       const response = await axios.post(
         'http://localhost:4000/api/contact/contatcRoute',
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contact/contatcRoute`,
         formData,
         {
           headers: {
