@@ -56,6 +56,12 @@ const menuItems = [
     subMenu: [], // no sub-menu, so should route
   },
   {
+    label: 'Blogs',
+    icon: <FaShoppingCart size={20} className='mr-3 text-gray-700' />,
+    link: '/blog',
+    subMenu: [], // no sub-menu, so should route
+  },
+  {
     label: 'Logout',
     icon: <FaSignOutAlt size={20} className='mr-3 text-gray-700' />,
     link: '/logout',

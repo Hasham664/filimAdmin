@@ -93,6 +93,8 @@ const Hero = () => {
     fetchData();
   }, []);
 
+  console.log(image,'image home');
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
