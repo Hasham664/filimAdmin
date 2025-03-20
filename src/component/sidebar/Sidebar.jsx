@@ -23,13 +23,13 @@ const menuItems = [
         icon: <FaHome size={16} className='mr-2' />,
       },
       {
-        label: 'Services',
-        link: '/services',
+        label: 'Studio',
+        link: '/studio',
         icon: <FaHome size={16} className='mr-2' />,
       },
       {
-        label: 'Studio',
-        link: '/studio',
+        label: 'Services',
+        link: '/services',
         icon: <FaHome size={16} className='mr-2' />,
       },
       {

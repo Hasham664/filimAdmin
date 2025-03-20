@@ -55,9 +55,7 @@ const Contact = () => {
       if (image) {
         formData.append('heroImage', image);
       }
-      if (advanceImage) {
-        formData.append('advanceImage', advanceImage);
-      }
+      
      
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/contact/contatcRoute`,

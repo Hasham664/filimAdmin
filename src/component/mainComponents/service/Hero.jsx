@@ -10,6 +10,7 @@ import Competition from './Competition';
 import Runway from './Runway';
 
 const Hero = () => {
+  const [serviceId, setServiceId] = useState(null);
   const [title, setTitle] = useState('');
   const [image, setImage] = useState();
   const [loading, setLoading] = useState(false);
@@ -54,17 +55,18 @@ const Hero = () => {
   const [runwayImage, setRunwayImage] = useState(false);
 
   useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const { data } = await axios.get(
-            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/service/getservice`
-          );
-          console.log(data.services[0], 'response get api');
-  
-          const homeData = data.services[0];
+    const fetchData = async () => {
+      try {
+        const { data } = await axios.get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/service/getservice`
+        );
+        console.log(data.services[0], 'response get api');
+
+        const homeData = data.services[0];
+        if (homeData) {
+          setServiceId(homeData._id);
           if (homeData?.hero) {
             setTitle(homeData.hero.title || '');
-          
             setImage(homeData.hero.bgImage || '');
           }
           if (homeData?.advance) {
@@ -87,25 +89,22 @@ const Hero = () => {
             setRunway(homeData.runway);
             setRunwayImage(homeData.runway.bgImage);
           }
-        } catch (error) {
-          console.error('Error fetching data:', error);
-          toast.error('Error fetching data');
         }
-      };
-  
-      fetchData();
-    }, []);
-  
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        toast.error('Error fetching data');
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       const formData = new FormData();
-      const hero = {
-        title,
-        
-      };
+      const hero = { title };
       formData.append('hero', JSON.stringify(hero));
       formData.append('advance', JSON.stringify(advance));
       formData.append('toplist', JSON.stringify(toplist));
@@ -131,25 +130,43 @@ const Hero = () => {
       if (runwayImage) {
         formData.append('runwayImage', runwayImage);
       }
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/service/serviceRoute`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
 
-      toast.success('Hero data submitted successfully!');
-      console.log('Response:', response.data);
+      // Call update API using PUT if serviceId exists
+      if (serviceId) {
+        const response = await axios.put(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/service/updateservice/${serviceId}`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+        toast.success('Hero data updated successfully!');
+        console.log('Response:', response.data);
+      } else {
+        // Fallback: create new service page if no id exists yet
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/service/serviceRoute`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+        setServiceId(response.data.service._id);
+        toast.success('Hero data created successfully!');
+        console.log('Response:', response.data);
+      }
     } catch (error) {
       console.log(error);
-      toast.error(error);
+      toast.error('Error updating data');
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <div className=''>
       <div className=' p-4 border'>
