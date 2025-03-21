@@ -4,22 +4,23 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
-
 const News = () => {
+  const [newsId, setNewsId] = useState('');
   const [title, setTitle] = useState('');
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Fetch existing news data
+  // Fetch existing news data on mount
   useEffect(() => {
     const fetchData = async () => {
       try {
         const { data } = await axios.get(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/news/getnews`
         );
-        console.log(data , 'response get api');
+        console.log(data, 'response get api');
         const homeData = data.news[0];
         if (homeData) {
+          setNewsId(homeData._id);
           setTitle(homeData.title || '');
           setImage(homeData.bgImage || '');
         }
@@ -32,30 +33,42 @@ const News = () => {
     fetchData();
   }, []);
 
-  // Submit handler: sends title and file to the backend
+  // Submit handler: if newsId exists, update; else, create new
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       const formData = new FormData();
-      // Append title directly (not inside a hero object)
       formData.append('title', title);
-      if (image) {
+      // Append image only if it's a File object (new upload)
+      if (image && typeof image !== 'string') {
         formData.append('heroImage', image);
       }
 
-      const response = await axios.post(
+      let response;
+      if (newsId) {
+        // Update news using PUT request
+        response = await axios.put(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/news/update/${newsId}`,
+          formData,
+          {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          }
+        );
+      } else {
+        // Create new news entry
+        response = await axios.post(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/news/newsRoute`,
           formData,
           {
-              headers: {
-                  'Content-Type': 'multipart/form-data',
-                },
-            }
+            headers: { 'Content-Type': 'multipart/form-data' },
+          }
         );
-        console.log('Response:', response);
-
-      toast.success('News data submitted successfully!');
+      }
+      console.log('Response:', response);
+      toast.success(
+        `News data ${newsId ? 'updated' : 'submitted'} successfully!`
+      );
     } catch (error) {
       console.error(error);
       toast.error('Error submitting data');
@@ -99,7 +112,7 @@ const News = () => {
               className='hidden'
             />
           </div>
-          {/* Image Preview */}
+          {/* Video Preview */}
           {image && (
             <div className='mt-4'>
               <video
@@ -111,7 +124,7 @@ const News = () => {
               />
             </div>
           )}
-          {/* Text Input Fields */}
+          {/* Title Input */}
           <div className='mt-8'>
             <div className='mb-4'>
               <h1 className='text-black'>TITLE</h1>
@@ -130,13 +143,11 @@ const News = () => {
               disabled={loading}
               className='bg-blue-600 hover:bg-blue-800 cursor-pointer text-white px-12 py-2 rounded-sm'
             >
-              {loading ? 'Loading...' : 'Submit'}
+              {loading ? 'Loading...' : newsId ? 'Update' : 'Submit'}
             </button>
           </div>
         </form>
       </div>
-      {/* Additional components can be passed props as needed */}
-      {/* <Advancing ... /> */}
     </div>
   );
 };

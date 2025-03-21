@@ -10,6 +10,8 @@ import Competition from './Competition';
 import Runway from './Runway';
 
 const Hero = () => {
+    const [festivalId, setFestivalId] = useState(null);
+  
   const [title, setTitle] = useState('');
   const [image, setImage] = useState();
   const [loading, setLoading] = useState(false);
@@ -62,30 +64,32 @@ const Hero = () => {
         console.log(data.festival[0], 'response get api');
 
         const homeData = data.festival[0];
-        if (homeData?.hero) {
-          setTitle(homeData.hero.title || '');
-
-          setImage(homeData.hero.bgImage || '');
-        }
-        if (homeData?.advance) {
-          setAdvance(homeData.advance);
-          setAdvanceImage(homeData.advance.bgImage);
-        }
-        if (homeData?.toplist) {
-          setToplist(homeData.toplist);
-          setToplistImage(homeData.toplist.bgImage);
-        }
-        if (homeData?.robot) {
-          setRobot(homeData.robot);
-          setRobotImage(homeData.robot.bgImage);
-        }
-        if (homeData?.competate) {
-          setCompetate(homeData.competate);
-          setCompetateImage(homeData.competate.bgImage);
-        }
-        if (homeData?.runway) {
-          setRunway(homeData.runway);
-          setRunwayImage(homeData.runway.bgImage);
+        if (homeData) {
+          setFestivalId(homeData._id);
+          if (homeData?.hero) {
+            setTitle(homeData.hero.title || '');
+            setImage(homeData.hero.bgImage || '');
+          }
+          if (homeData?.advance) {
+            setAdvance(homeData.advance);
+            setAdvanceImage(homeData.advance.bgImage);
+          }
+          if (homeData?.toplist) {
+            setToplist(homeData.toplist);
+            setToplistImage(homeData.toplist.bgImage);
+          }
+          if (homeData?.robot) {
+            setRobot(homeData.robot);
+            setRobotImage(homeData.robot.bgImage);
+          }
+          if (homeData?.competate) {
+            setCompetate(homeData.competate);
+            setCompetateImage(homeData.competate.bgImage);
+          }
+          if (homeData?.runway) {
+            setRunway(homeData.runway);
+            setRunwayImage(homeData.runway.bgImage);
+          }
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -97,58 +101,73 @@ const Hero = () => {
   }, []);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const formData = new FormData();
-      const hero = {
-        title,
-      };
-      formData.append('hero', JSON.stringify(hero));
-      formData.append('advance', JSON.stringify(advance));
-      formData.append('toplist', JSON.stringify(toplist));
-      formData.append('robot', JSON.stringify(robot));
-      formData.append('competate', JSON.stringify(competate));
-      formData.append('runway', JSON.stringify(runway));
-
-      if (image) {
-        formData.append('heroImage', image);
-      }
-      if (advanceImage) {
-        formData.append('advanceImage', advanceImage);
-      }
-      if (toplistImage) {
-        formData.append('toplistImage', toplistImage);
-      }
-      if (robotImage) {
-        formData.append('robotImage', robotImage);
-      }
-      if (competateImage) {
-        formData.append('competateImage', competateImage);
-      }
-      if (runwayImage) {
-        formData.append('runwayImage', runwayImage);
-      }
-      const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/festival/festivalRoute`,
-
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+      e.preventDefault();
+      setLoading(true);
+      try {
+        const formData = new FormData();
+        const hero = { title };
+        formData.append('hero', JSON.stringify(hero));
+        formData.append('advance', JSON.stringify(advance));
+        formData.append('toplist', JSON.stringify(toplist));
+        formData.append('robot', JSON.stringify(robot));
+        formData.append('competate', JSON.stringify(competate));
+        formData.append('runway', JSON.stringify(runway));
+  
+        if (image) {
+          formData.append('heroImage', image);
         }
-      );
-
-      toast.success('Hero data submitted successfully!');
-      console.log('Response:', response.data);
-    } catch (error) {
-      console.log(error);
-      toast.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+        if (advanceImage) {
+          formData.append('advanceImage', advanceImage);
+        }
+        if (toplistImage) {
+          formData.append('toplistImage', toplistImage);
+        }
+        if (robotImage) {
+          formData.append('robotImage', robotImage);
+        }
+        if (competateImage) {
+          formData.append('competateImage', competateImage);
+        }
+        if (runwayImage) {
+          formData.append('runwayImage', runwayImage);
+        }
+  
+        // Call update API using PUT if festivalId exists
+        if (festivalId) {
+          const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/festival/updatefestival/${festivalId}`,
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            }
+          );
+          toast.success('Hero data updated successfully!');
+          console.log('Response:', response.data);
+        } else {
+          // Fallback: create new service page if no id exists yet
+          const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/festival/festivalRoute`,
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            }
+          );
+          setFestivalId(response.data.festival._id);
+          toast.success('Hero data created successfully!');
+          console.log('Response:', response.data);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error('Error updating data');
+      } finally {
+        setLoading(false);
+      }
+    };
+  
   return (
     <div className=''>
       <div className=' p-4 border'>

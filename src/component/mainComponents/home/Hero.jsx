@@ -153,7 +153,7 @@ const Hero = () => {
           HERO SECTION
         </h1>
         <form>
-          <div className='rounded-md border border-indigo-500 bg-gray-50 p-4 shadow-md w-36'>
+          <div className=' rounded-md border border-indigo-500 bg-gray-50 p-4 shadow-md w-36'>
             <label
               htmlFor='upload2'
               className='flex flex-col items-center gap-2 cursor-pointer'
@@ -183,7 +183,7 @@ const Hero = () => {
           </div>
           {/* Image Preview */}
           {image && (
-            <div className='mt-4'>
+            <div className='mt-4  relative -z-30'>
               <video
                 src={
                   typeof image === 'string' ? image : URL.createObjectURL(image)

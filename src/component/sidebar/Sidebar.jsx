@@ -3,14 +3,13 @@ import { useState } from 'react';
 import {
   FaHome,
   FaShoppingCart,
-  FaUser,
-  FaChartBar,
-  FaSignOutAlt,
   FaBars,
   FaAngleDown,
 } from 'react-icons/fa';
 import Link from 'next/link';
-
+import { useRouter } from 'next/navigation';
+import { MdOutlineLogin } from 'react-icons/md';
+import { motion } from 'framer-motion';
 const menuItems = [
   {
     label: 'Pages',
@@ -61,16 +60,16 @@ const menuItems = [
     link: '/blog',
     subMenu: [], // no sub-menu, so should route
   },
-  {
-    label: 'Logout',
-    icon: <FaSignOutAlt size={20} className='mr-3 text-gray-700' />,
-    link: '/logout',
-    subMenu: [], // no sub-menu, so should route
-  },
+ 
 ];
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
-  // Store open/close state for submenus keyed by menu label
+  const router = useRouter();
+const [showPopup, setShowPopup] = useState(false);
+  const handleLogout = () => {
+    localStorage.removeItem('adminAuthenticated');
+    router.push('/login');
+  };
   const [openMenus, setOpenMenus] = useState({});
 
   const toggleSubMenu = (label) => {
@@ -160,6 +159,50 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             )}
           </div>
         ))}
+        {showPopup && (
+          <motion.div className=' fixed top-0 bottom-0 right-0 left-0 inset-0 backdrop-blur-sm bg-opacity-50 z-50 flex justify-center items-center p-2'>
+            <motion.div
+              initial={{ opacity: 0.2, z: 50 }}
+              transition={{ duration: 0.3 }}
+              whileInView={{ opacity: 1, z: 0 }}
+              viewport={{ once: true }}
+              className='flex  shadow-2xl flex-col w-[100%] sm:max-w-[40%] sm:w-full text-gray-800 justify-center bg-white p-5 rounded-md'
+            >
+              <p className='text-sm font-semibold'>
+                Are you sure you want to logout?
+              </p>
+              <p className='text-sm text-gray-500'>
+                You can login back at any time. All the changes you've been made
+                will not be lost.
+              </p>
+              <div className='flex gap-2 justify-end mt-2'>
+                <button
+                  className='px-3 cursor-pointer py-1 text-gray-700 transition duration-300 border rounded hover:bg-gray-100'
+                  onClick={() => setShowPopup(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setShowPopup(false);
+                  }}
+                  className='px-3 py-1 cursor-pointer bg-red-600 text-white hover:bg-red-500 rounded transition-all'
+                >
+                  Logout
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+        <div
+          onClick={() => setShowPopup(true)}
+          className='flex items-center gap-2.5  cursor-pointer px-4 py-2 hover:bg-blue-600 text-gray-700 hover:text-white  transition-all duration-300 '
+        >
+          <MdOutlineLogin fontSize={22} />
+
+          <button className=' cursor-pointer '>Logout</button>
+        </div>
       </nav>
     </div>
   );

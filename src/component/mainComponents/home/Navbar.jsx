@@ -207,10 +207,9 @@ const Navbar = () => {
         )}
       </div>
 
-      {/* Icon Uploads Section */}
       <div className='mb-4 grid grid-cols-2 gap-4'>
         {/* Tiktok Icon */}
-        <div className='rounded-md border border-indigo-500 bg-gray-50 p-4 shadow-md'>
+        <div className='rounded-md border  border-indigo-500 bg-gray-100 p-4 shadow-md'>
           <label
             htmlFor='tiktokUpload'
             className='flex flex-col items-center gap-2 cursor-pointer'
@@ -248,7 +247,7 @@ const Navbar = () => {
         </div>
 
         {/* Youtube Icon */}
-        <div className='rounded-md border border-indigo-500 bg-gray-50 p-4 shadow-md'>
+        <div className='rounded-md border border-indigo-500 bg-gray-100 p-4 shadow-md'>
           <label
             htmlFor='youtubeUpload'
             className='flex flex-col items-center gap-2 cursor-pointer'
@@ -286,7 +285,7 @@ const Navbar = () => {
         </div>
 
         {/* Instagram Icon */}
-        <div className='rounded-md border border-indigo-500 bg-gray-50 p-4 shadow-md'>
+        <div className='rounded-md border border-indigo-500 bg-gray-100 p-4 shadow-md'>
           <label
             htmlFor='instaUpload'
             className='flex flex-col items-center gap-2 cursor-pointer'
@@ -324,7 +323,7 @@ const Navbar = () => {
         </div>
 
         {/* Twitter Icon */}
-        <div className='rounded-md border border-indigo-500 bg-gray-50 p-4 shadow-md'>
+        <div className='rounded-md border border-indigo-500 bg-gray-100 p-4 shadow-md'>
           <label
             htmlFor='twitterUpload'
             className='flex flex-col items-center gap-2 cursor-pointer'

@@ -10,6 +10,9 @@ import Competition from './Competition';
 import Runway from './Runway';
 
 const Hero = () => {
+  // New state for studio ID
+  const [studioId, setStudioId] = useState(null);
+
   const [title, setTitle] = useState('');
   const [image, setImage] = useState();
   const [loading, setLoading] = useState(false);
@@ -29,7 +32,6 @@ const Hero = () => {
     description: '',
     button: '',
   });
-
   const [toplistImage, setToplistImage] = useState(false);
 
   const [robot, setRobot] = useState({
@@ -39,7 +41,6 @@ const Hero = () => {
     description2: '',
     button: '',
   });
-
   const [robotImage, setRobotImage] = useState(false);
 
   const [competate, setCompetate] = useState({
@@ -50,7 +51,6 @@ const Hero = () => {
     description2: '',
     button: '',
   });
-
   const [competateImage, setCompetateImage] = useState(false);
 
   const [runway, setRunway] = useState({
@@ -60,7 +60,6 @@ const Hero = () => {
     description2: '',
     button: '',
   });
-
   const [runwayImage, setRunwayImage] = useState(false);
 
   useEffect(() => {
@@ -69,34 +68,34 @@ const Hero = () => {
         const { data } = await axios.get(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/studio/getstudio`
         );
-        console.log(data.studio[0].competate2, 'response competate api');
-        console.log(data.studio[0].toplist2, 'response toplist2 api');
-        console.log(data.studio[0].competate, 'response competate2 api');
-
         const homeData = data.studio[0];
-        if (homeData?.hero) {
-          setTitle(homeData.hero.title || '');
-
-          setImage(homeData.hero.bgImage || '');
-        }
-        if (homeData?.advance) {
-          setAdvance(homeData.advance);
-        }
-        if (homeData?.toplist) {
-          setToplist(homeData.toplist);
-          setToplistImage(homeData.toplist.bgImage);
-        }
-        if (homeData?.competate) {
-          setRobot(homeData.competate);
-          setRobotImage(homeData.competate.bgImage);
-        }
-        if (homeData?.toplist2) {
-          setCompetate(homeData.toplist2);
-          setCompetateImage(homeData.toplist2.bgImage);
-        }
-        if (homeData?.competate2) {
-          setRunway(homeData.competate2);
-          setRunwayImage(homeData.competate2.bgImage);
+        if (homeData) {
+          setStudioId(homeData._id);
+          if (homeData?.hero) {
+            setTitle(homeData.hero.title || '');
+            setImage(homeData.hero.bgImage || '');
+          }
+          if (homeData?.advance) {
+            setAdvance(homeData.advance);
+          }
+          if (homeData?.toplist) {
+            setToplist(homeData.toplist);
+            setToplistImage(homeData.toplist.bgImage);
+          }
+          // Here, we assume that 'competate' from the backend maps to your 'robot' state,
+          // and 'toplist2' maps to 'competate', while 'competate2' maps to 'runway'
+          if (homeData?.competate) {
+            setRobot(homeData.competate);
+            setRobotImage(homeData.competate.bgImage);
+          }
+          if (homeData?.toplist2) {
+            setCompetate(homeData.toplist2);
+            setCompetateImage(homeData.toplist2.bgImage);
+          }
+          if (homeData?.competate2) {
+            setRunway(homeData.competate2);
+            setRunwayImage(homeData.competate2.bgImage);
+          }
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -112,61 +111,79 @@ const Hero = () => {
     setLoading(true);
     try {
       const formData = new FormData();
-      const hero = {
-        title,
-      };
-      formData.append('hero', JSON.stringify(hero));
+      const heroData = { title };
+      formData.append('hero', JSON.stringify(heroData));
       formData.append('advance', JSON.stringify(advance));
       formData.append('toplist', JSON.stringify(toplist));
+      // Here, we are sending robot data as "competate"
       formData.append('competate', JSON.stringify(robot));
+      // And sending competate data as "toplist2"
       formData.append('toplist2', JSON.stringify(competate));
+      // And runway data as "competate2"
       formData.append('competate2', JSON.stringify(runway));
 
       if (image) {
         formData.append('heroImage', image);
       }
-
       if (toplistImage) {
         formData.append('toplistImage', toplistImage);
       }
+      // For the "competate" section (Robot) we use the image key "competateImage"
       if (robotImage) {
-        formData.append('toplistImage2', robotImage);
+        formData.append('competateImage', robotImage);
       }
+      // For the "toplist2" section we use the image key "toplistImage2"
       if (competateImage) {
-        formData.append('competateImage', competateImage);
+        formData.append('toplistImage2', competateImage);
       }
       if (runwayImage) {
         formData.append('competateImage2', runwayImage);
       }
-      const response = await axios.post(
-        'http://localhost:4000/api/studio/studioRoute',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
 
-      toast.success('Hero data submitted successfully!');
+
+      let response;
+      if (studioId) {
+        // Update the existing studio page using PUT
+        response = await axios.put(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/studio/updateStudio/${studioId}`,
+          formData,
+          {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          }
+        );
+        toast.success('Studio page updated successfully!');
+      } else {
+        // Create a new studio page if no ID exists
+        response = await axios.post(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/studio/studioRoute`,
+          formData,
+          {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          }
+        );
+        setStudioId(response.data.studio._id);
+        toast.success('Studio page created successfully!');
+      }
       console.log('Response:', response.data);
     } catch (error) {
-      console.log(error);
-      toast.error(error);
+      console.error(error);
+      toast.error('Error submitting data');
     } finally {
       setLoading(false);
     }
   };
+
+  console.log(competateImage,'competeteimage');
+  
+
   return (
     <div className=''>
-      <div className=' p-4 border'>
+      <div className='p-4 border'>
         <h1 className='mt-4 mb-12 text-center text-3xl font-semibold'>
           HERO SECTION
-        </h1>{' '}
+        </h1>
         <form>
-          {' '}
           <div className='rounded-md border border-indigo-500 bg-gray-50 p-4 shadow-md w-36'>
-            {' '}
             <label
               htmlFor='upload2'
               className='flex flex-col items-center gap-2 cursor-pointer'
@@ -203,6 +220,7 @@ const Hero = () => {
                 }
                 alt='Preview'
                 className='w-36 h-auto'
+                controls
               />
             </div>
           )}
@@ -221,7 +239,7 @@ const Hero = () => {
           </div>
         </form>
       </div>
-      {/* Other components on the home page */}
+      {/* Other Components */}
       <Advancing advance={advance} setAdvance={setAdvance} />
       <TopListing
         toplist={toplist}
@@ -252,7 +270,7 @@ const Hero = () => {
           onClick={handleSubmit}
           type='submit'
           disabled={loading}
-          className='bg-blue-600 hover:bg-blue-800 cursor-pointer text-white px-12 py-2 rounded-sm text-right'
+          className='bg-blue-600 hover:bg-blue-800 cursor-pointer text-white px-12 py-2 rounded-sm'
         >
           {loading ? 'Loading...' : 'Submit'}
         </button>

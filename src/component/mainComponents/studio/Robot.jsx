@@ -11,7 +11,7 @@ const Robot = ({robot,setRobot,robotImage,setRobotImage}) => {
 
  console.log(robot, 'competate');
 
-  return (
+  return ( 
     <div>
       <div className='p-4 border mt-12'>
         <h1 className='mt-4 mb-12 text-center text-3xl font-semibold'>

@@ -1,11 +1,14 @@
 'use client';
 import Sidebar from '@/component/sidebar/Sidebar';
 import React, { useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
 const Wrapper = ({ children }) => {
-  // Initialize with a default value.
+  const router = useRouter();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(true);
 
+  // Retrieve sidebar state from localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('isOpen');
@@ -21,6 +24,21 @@ const Wrapper = ({ children }) => {
       localStorage.setItem('isOpen', JSON.stringify(isOpen));
     }
   }, [isOpen]);
+
+  // Only check authentication if not on the login page.
+  useEffect(() => {
+    if (pathname !== '/login') {
+      const isAuthenticated = localStorage.getItem('adminAuthenticated');
+      if (!isAuthenticated) {
+        router.push('/login');
+      }
+    }
+  }, [router, pathname]);
+
+  // If on the login page, render children without the sidebar.
+  if (pathname === '/login') {
+    return <>{children}</>;
+  }
 
   const toggleSidebar = () => {
     setIsOpen((prev) => !prev);
